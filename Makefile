@@ -25,16 +25,6 @@ endif
 
 default: execute
 
-.PHONY: platform
-platform:
-	cargo +risc0 rustc -p zkvm-platform --target riscv32im-risc0-zkvm-elf --lib --crate-type staticlib --release --target-dir ./guest/out/platform
-
-# Regenerate the header file. Assumes cbindgen installed locally.
-.PHONY: headers
-headers:
-    # Note: this is currently broken on main, as there is a FFI incompatible type
-	cbindgen --crate zkvm-platform -c ./platform/cbindgen.toml -o ./guest/platform.h
-
 .PHONY: gcc
 gcc:
 	@if ! [ -d "./riscv32im-${MACHINE}" ]; then \
@@ -44,7 +34,7 @@ gcc:
     fi
 	 
 .PHONY: guest
-guest: gcc platform
+guest: gcc
 	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-as ./guest/main.s -o ./guest/out/main.o
 	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/out/main.o -o ./guest/out/main -T ./guest/riscv32im-risc0-zkvm-elf.ld -nostdlib -static
 
