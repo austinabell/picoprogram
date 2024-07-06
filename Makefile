@@ -50,8 +50,8 @@ guest: gcc platform
 
 .PHONY: execute
 execute: guest
-	RUST_LOG=trace RISC0_DEV_MODE=true cargo run -p c-guest-host
+	RISC0_DEV_MODE=true cargo run -p c-guest-host
 
 .PHONY: prove
 prove: guest
-	RUST_LOG=info cargo run -p c-guest-host
+	cargo run -p c-guest-host
