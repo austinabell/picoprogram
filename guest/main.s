@@ -1,22 +1,15 @@
 .section .text._start
 .global _start
 _start:
-  .option push;
-  .option norelax
-  la gp, __global_pointer$
-  .option pop
-  la sp, _stack_top
-  call main
-main:
-  # ECALL halt
-  li t0, 0
-  # Clear a0 register as HALT_TERMINATE is 0. Likely defaults to 0?
-  sll	a0,a0,0x8
+  # ECALL halt (register defaults to 0, so no need to explicitly set)
+  # li t0, 0
+  # Clear a0 register as HALT_TERMINATE is 0.
+  # sll	a0,a0,0x8
   # Load out state into a1
   la a1, hash
   ecall
-  # This shouldn't be needed
-  unimp
+  # Assumes that the `sys_halt` ecall will stop execution, and not continuing executing. Should
+  # put an `unimp` instruction after here to be safe against a malicious host in practice.
 
 hash:
   # Sha256 digest of empty commit and assumption
