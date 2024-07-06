@@ -45,12 +45,13 @@ gcc:
 	 
 .PHONY: guest
 guest: gcc platform
-	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/main.c -o ./guest/out/main -L${ROOT_DIR}guest/out/platform/riscv32im-risc0-zkvm-elf/release -lzkvm_platform -T ./guest/riscv32im-risc0-zkvm-elf.ld
+	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-as ./guest/main.s -o ./guest/out/main.o
+	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/out/main.o -o ./guest/out/main -T ./guest/riscv32im-risc0-zkvm-elf.ld -nostdlib -static
 
 .PHONY: execute
 execute: guest
-	RISC0_DEV_MODE=true cargo run -p c-guest-host
+	RUST_LOG=info RISC0_DEV_MODE=true cargo run -p c-guest-host
 
 .PHONY: prove
 prove: guest
-	cargo run -p c-guest-host
+	RUST_LOG=info cargo run -p c-guest-host
