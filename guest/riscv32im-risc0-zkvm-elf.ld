@@ -34,4 +34,8 @@ SECTIONS {
   .rodata 0x408 : ALIGN(4) {
     *(.rodata*)
   } >ram
+
+  /DISCARD/ : {
+    *(.riscv.attributes)
+  }
 }
