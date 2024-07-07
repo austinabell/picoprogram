@@ -35,8 +35,7 @@ gcc:
 	 
 .PHONY: guest
 guest: gcc
-	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-as ./guest/main.s -o ./guest/out/main.o
-	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/out/main.o -o ./guest/out/main -T ./guest/riscv32im-risc0-zkvm-elf.ld -nostdlib -static
+	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/main.s -o ./guest/out/main -T ./guest/riscv32im-risc0-zkvm-elf.ld -nostdlib -static
 
 .PHONY: execute
 execute: guest
