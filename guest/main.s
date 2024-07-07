@@ -2,9 +2,9 @@
 .global _start
 _start:
   # ECALL halt (register defaults to 0, so no need to explicitly set)
-  # li t0, 0
+  # addi t0, x0, 0
   # Clear a0 register as HALT_TERMINATE is 0.
-  # sll	a0,a0,0x8
+  # addi a0, x0, 0
   # Load out state into a1
   # la a1, hash
   
