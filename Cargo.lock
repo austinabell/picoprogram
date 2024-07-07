@@ -2110,3 +2110,12 @@ dependencies = [
  "quote",
  "syn 2.0.68",
 ]
+
+[[package]]
+name = "zkvm-platform"
+version = "0.1.0"
+dependencies = [
+ "risc0-binfmt",
+ "risc0-zkp",
+ "risc0-zkvm-platform",
+]

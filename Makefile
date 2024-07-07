@@ -32,10 +32,14 @@ gcc:
 	else \
 		echo "riscv32 toolchain already exists, skipping step"; \
     fi
+
+.PHONY: platform
+platform:
+	cargo +risc0 rustc -p zkvm-platform --target riscv32im-risc0-zkvm-elf --lib --crate-type staticlib --release --target-dir ./guest/out/platform
 	 
 .PHONY: guest
-guest: gcc
-	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/main.s -o ./guest/out/main -T ./guest/riscv32im-risc0-zkvm-elf.ld -nostdlib -static
+guest: gcc platform
+	${ROOT_DIR}riscv32im-${MACHINE}/bin/riscv32-unknown-elf-gcc -nostartfiles ./guest/main.s -o ./guest/out/main -T ./guest/riscv32im-risc0-zkvm-elf.ld -L${ROOT_DIR}guest/out/platform/riscv32im-risc0-zkvm-elf/release -lzkvm_platform -nostdlib -static
 
 .PHONY: execute
 execute: guest
