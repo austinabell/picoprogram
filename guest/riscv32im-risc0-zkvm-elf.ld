@@ -18,24 +18,60 @@ OUTPUT_FORMAT("elf32-littleriscv", "elf32-littleriscv", "elf32-littleriscv")
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
 
+/* Must match risc0/zkvm/platform/src/memory.rs */
 MEMORY {
-  ram        : ORIGIN = 0x00000400, LENGTH =  0x001FFC00
+  stack        : ORIGIN = 0x00000400, LENGTH =  0x001FFC00
+  ram          : ORIGIN = 0x00200800, LENGTH =  0x06FF8000
   system  (X)  : ORIGIN = 0x07000000, LENGTH =  80M
 }
 
 SECTIONS {
-  . = 0x400;
-  .text 0x400 : ALIGN(4) {
+  . = 0x00200800;
+  .text 0x00200800 : ALIGN(4) {
     KEEP (*(.init))
     . = ALIGN(4);
-  } >ram
-  
-  /* There are only two instructions, so just specifying the addr to safely reference */
-  .rodata 0x408 : ALIGN(4) {
+    *(.text*)
+    . = ALIGN(4);
     *(.rodata*)
+    . = ALIGN(4);
+    *(.srodata*)
   } >ram
 
+  . = ALIGN(4);
+
+  .data : ALIGN(4) {
+    *(.data .data.*)
+    *(.gnu.linkonce.d.*)
+    __global_pointer$ = . + 0x800;
+    *(.sdata .sdata.* .sdata2.*)
+    *(.gnu.linkonce.s.*)
+  } >ram
+
+  . = ALIGN(4);
+
+  .bss (NOLOAD) : ALIGN(4) {
+    __bss_start = .;
+    *(.sbss*)
+    *(.gnu.linkonce.sb.*)
+    *(.bss .bss.*)
+    *(.gnu.linkonce.b.*)
+    *(COMMON)
+    . = ALIGN(4);
+    __bss_end = .;
+  } >ram
+
+  /* _end marker for zkvm allocator */
+  _end = .;
+
+  /* Stack top marker, used to initialize the stack pointer */
+  __stack_init$ = 0x00200400;
+  _stack_top = __stack_init$;
+
+
   /DISCARD/ : {
+    *(.rel*)
+    *(.comment)
+    *(.eh_frame)
     *(.riscv.attributes)
   }
 }

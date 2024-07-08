@@ -20,32 +20,32 @@ use risc0_zkp::core::hash::sha::rust_crypto::{Digest as _, Sha256};
 use risc0_zkvm_platform::fileno;
 use risc0_zkvm_platform::syscall::{sys_halt, sys_panic, sys_read, sys_write};
 
-// Load the globals pointer. The program will load pointers relative to this
-// register, so it must be set to the right value on startup.
-// See: https://gnu-mcu-eclipse.github.io/arch/riscv/programmer/#the-gp-global-pointer-register
-// Linker relaxations must be disabled to avoid the initialization beign
-// relaxed with an uninitialized global pointer: mv gp, gp
-//
-// This will also set up the stack pointer to the _stack_top address from the linker script and
-// call the main function.
-//
-// Note: this is slightly different than the rust program because it uses a linker script symbol to
-// set the stack pointer and calls main instead of __start.
-#[cfg(target_os = "zkvm")]
-core::arch::global_asm!(
-    r#"
-.section .text._start
-.global _start
-_start:
-    .option push;
-    .option norelax
-    la gp, __global_pointer$
-    .option pop
-    la sp, _stack_top
+// // Load the globals pointer. The program will load pointers relative to this
+// // register, so it must be set to the right value on startup.
+// // See: https://gnu-mcu-eclipse.github.io/arch/riscv/programmer/#the-gp-global-pointer-register
+// // Linker relaxations must be disabled to avoid the initialization beign
+// // relaxed with an uninitialized global pointer: mv gp, gp
+// //
+// // This will also set up the stack pointer to the _stack_top address from the linker script and
+// // call the main function.
+// //
+// // Note: this is slightly different than the rust program because it uses a linker script symbol to
+// // set the stack pointer and calls main instead of __start.
+// #[cfg(target_os = "zkvm")]
+// core::arch::global_asm!(
+//     r#"
+// .section .text._start
+// .global _start
+// _start:
+//     .option push;
+//     .option norelax
+//     la gp, __global_pointer$
+//     .option pop
+//     la sp, _stack_top
 
-    call main;
-"#,
-);
+//     call main;
+// "#,
+// );
 
 const ERR_FREED: &[u8] = b"error: sha256_state has not been initialized or has already been freed";
 
