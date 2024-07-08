@@ -24,11 +24,17 @@ fn main() -> anyhow::Result<()> {
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
-    let env = ExecutorEnv::builder().build()?;
+    let env = ExecutorEnv::builder()
+        .write_slice(&8u32.to_le_bytes())
+        .build()?;
     let prover = default_prover();
 
     // Produce a receipt by proving the specified ELF binary.
     let receipt = prover.prove(env, &consensus_elf)?.receipt;
+
+    // Deserializing as by default this will just expect LE bytes
+    let value: u32 = receipt.journal.decode()?;
+    println!("value: {}", value);
 
     // The receipt was verified at the end of proving, but the below code is an
     // example of how someone else could verify this receipt.
