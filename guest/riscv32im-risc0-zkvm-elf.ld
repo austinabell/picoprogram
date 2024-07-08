@@ -20,14 +20,14 @@ ENTRY(_start)
 
 /* Must match risc0/zkvm/platform/src/memory.rs */
 MEMORY {
-  stack        : ORIGIN = 0x00000400, LENGTH =  0x001FFC00
-  ram          : ORIGIN = 0x00200800, LENGTH =  0x06FF8000
-  system  (X)  : ORIGIN = 0x07000000, LENGTH =  80M
+  stack        : ORIGIN = 0x00000400, LENGTH = 0x00008000   # 2048 bytes for the stack
+  ram          : ORIGIN = 0x00008400, LENGTH = 0x06FF8000
+  system  (X)  : ORIGIN = 0x07000000, LENGTH = 80M
 }
 
 SECTIONS {
-  . = 0x00200800;
-  .text 0x00200800 : ALIGN(4) {
+  . = 0x00008400;
+  .text 0x00008400 : ALIGN(4) {
     KEEP (*(.init))
     . = ALIGN(4);
     *(.text*)
@@ -64,7 +64,7 @@ SECTIONS {
   _end = .;
 
   /* Stack top marker, used to initialize the stack pointer */
-  __stack_init$ = 0x00200400;
+  __stack_init$ = 0x00008000;
   _stack_top = __stack_init$;
 
 
